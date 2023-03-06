@@ -1,0 +1,2 @@
+Logman stop PerfMonFull
+Logman delete PerfMonFull
