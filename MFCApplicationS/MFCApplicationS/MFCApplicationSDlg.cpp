@@ -131,6 +131,9 @@ BOOL CMFCApplicationSDlg::OnInitDialog()
 	LinkMember.InsertColumn(0, _T(""), LVCFMT_LEFT, 100);//姓名
 	LinkMember.InsertColumn(1, L"IP", LVCFMT_LEFT, 125);
 
+	CString b = getIP();
+	strcpy_s(IP,CT2A(b));
+
 	return TRUE;  // 傳回 TRUE，除非您對控制項設定焦點
 }
 
@@ -285,6 +288,22 @@ void CMFCApplicationSDlg::OnBnClickedCancel()
 	BtnStopConnect.EnableWindow(FALSE);
 	CDialogEx::OnOK();
 }
+void CMFCApplicationSDlg::setIniFilePathToBuffer(wchar_t* Buffer, const wchar_t* IniName) {
+	wchar_t strFilePath[MAX_PATH];
+	//get the path og exe. Because config,ini is locate  there
+	GetModuleFileName(NULL, strFilePath, MAX_PATH);
+	PathRemoveFileSpec(strFilePath);
+	wcscat_s(strFilePath, L"\\");
+	wcscat_s(strFilePath, IniName);
+	memcpy(Buffer, strFilePath, MAX_PATH);
+}
+CString CMFCApplicationSDlg::getIP() {
+	wchar_t strFilePath[MAX_PATH];
+	setIniFilePathToBuffer(strFilePath, L"Config.ini");
+	CString strContentReturn;
+	GetPrivateProfileString(L"IP", L"IPv4", L"172.20.10.3", strContentReturn.GetBuffer(256), 256, strFilePath);
+	return strContentReturn;
+}
 
 //while loop accept socket
 DWORD WINAPI CMFCApplicationSDlg::ListenThreadFunc(LPVOID pParam) {
@@ -298,7 +317,8 @@ DWORD WINAPI CMFCApplicationSDlg::ListenThreadFunc(LPVOID pParam) {
 
 	sockaddr_in service;
 	service.sin_family = AF_INET;
-	service.sin_addr.s_addr = inet_addr("172.20.10.2");
+	
+	service.sin_addr.s_addr = inet_addr(pDlg->IP);
 	CString csPortNum;
 	pDlg->PortNum.GetWindowTextW(csPortNum);
 	service.sin_port = htons(_ttoi(csPortNum));

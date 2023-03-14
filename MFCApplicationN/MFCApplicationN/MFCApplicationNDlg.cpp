@@ -121,7 +121,8 @@ BOOL CMFCApplicationNDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 設定小圖示
 
 	// TODO: 在此加入額外的初始設定
-
+	CString b = getIP();
+	strcpy_s(IP, CT2A(b));
 	return TRUE;  // 傳回 TRUE，除非您對控制項設定焦點
 }
 
@@ -221,7 +222,7 @@ BOOL CMFCApplicationNDlg::ConnectSocket(CMFCApplicationNDlg* pClient) {
 	sa.sin_family = AF_INET;
 	sa.sin_port = htons(dPort);
 	//這邊開始連線
-	sa.sin_addr.s_addr = inet_addr("172.20.10.2");
+	sa.sin_addr.s_addr = inet_addr(IP);
 	/*char szIpAdd[32];
 	USES_CONVERSION; 
 	sprintf_s(szIpAdd, 32, "%s", T2A(strIp));
@@ -422,4 +423,20 @@ void CMFCApplicationNDlg::OnClose()
 	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
 
 	CDialogEx::OnOK();
+}
+void CMFCApplicationNDlg::setIniFilePathToBuffer(wchar_t* Buffer, const wchar_t* IniName) {
+	wchar_t strFilePath[MAX_PATH];
+	//get the path og exe. Because config,ini is locate  there
+	GetModuleFileName(NULL, strFilePath, MAX_PATH);
+	PathRemoveFileSpec(strFilePath);
+	wcscat_s(strFilePath, L"\\");
+	wcscat_s(strFilePath, IniName);
+	memcpy(Buffer, strFilePath, MAX_PATH);
+}
+CString CMFCApplicationNDlg::getIP() {
+	wchar_t strFilePath[MAX_PATH];
+	setIniFilePathToBuffer(strFilePath, L"Config.ini");
+	CString strContentReturn;
+	GetPrivateProfileString(L"IP", L"IPv4", L"172.20.10.3", strContentReturn.GetBuffer(256), 256, strFilePath);
+	return strContentReturn;
 }

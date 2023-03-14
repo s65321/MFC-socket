@@ -64,6 +64,11 @@ public:
 	static DWORD WINAPI ClientThreadProc(LPVOID Lparam);//while loop recieve client socket
 	CCriticalSection csRemoveArray;
 	afx_msg void OnBnClickedButton2();
+
+	void setIniFilePathToBuffer(wchar_t* Buffer, const wchar_t* IniName);
+	CString getIP();
+
+	char IP[20];
 };
 
 class CClientItem

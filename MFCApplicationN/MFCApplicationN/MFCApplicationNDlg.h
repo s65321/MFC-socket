@@ -56,4 +56,8 @@ public:
 	BOOL socket_Select(SOCKET hSocket, DWORD nTimeOut, BOOL bRead);//polling socket
 	SOCKET m_ClientSock;//client socket locate in object
 	BOOL isServerOn;//State of connection, for next stage development
+
+	void setIniFilePathToBuffer(wchar_t* Buffer, const wchar_t* IniName);
+	CString getIP();
+	char IP[20];
 };
